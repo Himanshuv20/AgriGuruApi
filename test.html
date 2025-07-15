@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriGuru API Test Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2d5016 0%, #3e6b1f 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: #e9ecef;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .tab:last-child {
+            border-right: none;
+        }
+
+        .tab.active {
+            background: #2d5016;
+            color: white;
+        }
+
+        .tab:hover:not(.active) {
+            background: #c8d5b9;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d5016;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2d5016;
+            box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #2d5016 0%, #3e6b1f 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(45, 80, 22, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45, 80, 22, 0.4);
+        }
+
+        .btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .response-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #2d5016;
+        }
+
+        .response-section h3 {
+            color: #2d5016;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .response-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .success {
+            border-left-color: #28a745;
+        }
+
+        .error {
+            border-left-color: #dc3545;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2d5016;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-online {
+            background: #28a745;
+            box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.3);
+        }
+
+        .status-offline {
+            background: #dc3545;
+            box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.3);
+        }
+
+        .api-status {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .predefined-scenarios {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .scenario-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #dee2e6;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .scenario-card:hover {
+            border-color: #2d5016;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .scenario-card h4 {
+            color: #2d5016;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .scenario-card p {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .recommendation-card {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+
+        .recommendation-card h5 {
+            color: #2d5016;
+            margin-bottom: 8px;
+        }
+
+        .recommendation-card .suitability {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .suitability.high {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .suitability.medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .suitability.low {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .tips-section {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            margin-top: 15px;
+        }
+
+        .tips-section h5 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .tips-section ul {
+            margin-left: 20px;
+        }
+
+        .tips-section li {
+            color: #856404;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab {
+                min-width: 50%;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌾 AgriGuru API Test Interface</h1>
+            <p>AI-Powered Multilingual Farming Assistant for Indian Farmers</p>
+        </div>
+
+        <div class="main-content">
+            <!-- API Status -->
+            <div class="api-status">
+                <h3><span id="statusIndicator" class="status-indicator status-offline"></span>API Status: <span id="statusText">Checking...</span></h3>
+                <p>Base URL: <strong>http://localhost:3000</strong></p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('crop-advice')">🌱 Crop Advice</button>
+                <button class="tab" onclick="switchTab('scenarios')">📋 Test Scenarios</button>
+                <button class="tab" onclick="switchTab('api-info')">ℹ️ API Info</button>
+                <button class="tab" onclick="switchTab('bulk-test')">🧪 Bulk Test</button>
+            </div>
+
+            <!-- Crop Advice Tab -->
+            <div id="crop-advice" class="tab-content active">
+                <h2>Crop Recommendation Test</h2>
+                <form id="cropAdviceForm">
+                    <div class="form-group">
+                        <label for="question">Farmer's Question:</label>
+                        <textarea id="question" placeholder="e.g., What crop should I grow in black soil with limited water?" required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="language">Language:</label>
+                            <select id="language" required>
+                                <option value="en">English</option>
+                                <option value="hi">Hindi (हिन्दी)</option>
+                                <option value="bn">Bengali (বাংলা)</option>
+                                <option value="ta">Tamil (தமிழ்)</option>
+                                <option value="te">Telugu (తెలుగు)</option>
+                                <option value="mr">Marathi (मराठी)</option>
+                                <option value="gu">Gujarati (ગુજરાતી)</option>
+                                <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                                <option value="ml">Malayalam (മലയാളം)</option>
+                                <option value="pa">Punjabi (ਪੰਜਾਬੀ)</option>
+                                <option value="ur">Urdu (اردو)</option>
+                            </select>
+                        </div>
+                        <div class="form-col">
+                            <label for="location">Location:</label>
+                            <input type="text" id="location" placeholder="e.g., Maharashtra">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="soilType">Soil Type:</label>
+                            <select id="soilType">
+                                <option value="">Select soil type</option>
+                                <option value="black">Black Soil</option>
+                                <option value="red">Red Soil</option>
+                                <option value="alluvial">Alluvial Soil</option>
+                                <option value="sandy">Sandy Soil</option>
+                                <option value="clayey">Clayey Soil</option>
+                                <option value="loamy">Loamy Soil</option>
+                                <option value="laterite">Laterite Soil</option>
+                                <option value="mountain">Mountain Soil</option>
+                            </select>
+                        </div>
+                        <div class="form-col">
+                            <label for="season">Season:</label>
+                            <select id="season">
+                                <option value="">Select season</option>
+                                <option value="kharif">Kharif (Monsoon)</option>
+                                <option value="rabi">Rabi (Winter)</option>
+                                <option value="zaid">Zaid (Summer)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="farmSize">Farm Size:</label>
+                            <input type="text" id="farmSize" placeholder="e.g., 2 acres">
+                        </div>
+                        <div class="form-col">
+                            <label for="irrigation">Irrigation:</label>
+                            <select id="irrigation">
+                                <option value="">Select irrigation type</option>
+                                <option value="rainfed">Rainfed</option>
+                                <option value="irrigated">Irrigated</option>
+                                <option value="drip">Drip Irrigation</option>
+                                <option value="sprinkler">Sprinkler</option>
+                                <option value="canal">Canal</option>
+                                <option value="borewell">Borewell</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="experience">Experience Level:</label>
+                            <select id="experience">
+                                <option value="">Select experience</option>
+                                <option value="beginner">Beginner</option>
+                                <option value="intermediate">Intermediate</option>
+                                <option value="experienced">Experienced</option>
+                            </select>
+                        </div>
+                        <div class="form-col">
+                            <label for="budget">Budget:</label>
+                            <input type="text" id="budget" placeholder="e.g., Low, Medium, High">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn" id="submitBtn">
+                        Get Crop Recommendations
+                    </button>
+                </form>
+
+                <div id="cropResponse" class="response-section" style="display: none;">
+                    <h3>Response</h3>
+                    <div id="cropResponseContent" class="response-content"></div>
+                </div>
+            </div>
+
+            <!-- Test Scenarios Tab -->
+            <div id="scenarios" class="tab-content">
+                <h2>Predefined Test Scenarios</h2>
+                <p>Click on any scenario to automatically fill the form and test the API:</p>
+                
+                <div class="predefined-scenarios">
+                    <div class="scenario-card" onclick="loadScenario('maharashtra-cotton')">
+                        <h4>🌾 Maharashtra Cotton Farmer</h4>
+                        <p><strong>Location:</strong> Maharashtra</p>
+                        <p><strong>Soil:</strong> Black soil</p>
+                        <p><strong>Season:</strong> Kharif (Monsoon)</p>
+                        <p><strong>Issue:</strong> Cotton crop not growing well</p>
+                    </div>
+
+                    <div class="scenario-card" onclick="loadScenario('punjab-wheat')">
+                        <h4>🌾 Punjab Wheat Farmer</h4>
+                        <p><strong>Location:</strong> Punjab</p>
+                        <p><strong>Soil:</strong> Alluvial soil</p>
+                        <p><strong>Season:</strong> Rabi (Winter)</p>
+                        <p><strong>Issue:</strong> Wheat variety selection</p>
+                    </div>
+
+                    <div class="scenario-card" onclick="loadScenario('rajasthan-desert')">
+                        <h4>🏜️ Rajasthan Desert Farmer</h4>
+                        <p><strong>Location:</strong> Rajasthan</p>
+                        <p><strong>Soil:</strong> Sandy soil</p>
+                        <p><strong>Irrigation:</strong> Rainfed</p>
+                        <p><strong>Issue:</strong> Minimal water crops</p>
+                    </div>
+
+                    <div class="scenario-card" onclick="loadScenario('bengal-rice')">
+                        <h4>🌾 West Bengal Rice Farmer</h4>
+                        <p><strong>Location:</strong> West Bengal</p>
+                        <p><strong>Soil:</strong> Alluvial soil</p>
+                        <p><strong>Season:</strong> Kharif</p>
+                        <p><strong>Issue:</strong> Rice yield improvement</p>
+                    </div>
+
+                    <div class="scenario-card" onclick="loadScenario('karnataka-multi')">
+                        <h4>🌱 Karnataka Multi-crop Farmer</h4>
+                        <p><strong>Location:</strong> Karnataka</p>
+                        <p><strong>Soil:</strong> Red soil</p>
+                        <p><strong>Irrigation:</strong> Drip</p>
+                        <p><strong>Issue:</strong> Multiple crop planning</p>
+                    </div>
+
+                    <div class="scenario-card" onclick="loadScenario('hindi-farmer')">
+                        <h4>🇮🇳 Hindi Speaking Farmer</h4>
+                        <p><strong>Language:</strong> Hindi</p>
+                        <p><strong>Location:</strong> Madhya Pradesh</p>
+                        <p><strong>Soil:</strong> Black soil</p>
+                        <p><strong>Question:</strong> In Hindi language</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Info Tab -->
+            <div id="api-info" class="tab-content">
+                <h2>API Information</h2>
+                <div class="form-row">
+                    <div class="form-col">
+                        <button class="btn" onclick="testEndpoint('/health')">Test Health Check</button>
+                    </div>
+                    <div class="form-col">
+                        <button class="btn" onclick="testEndpoint('/api/v1')">Test API Documentation</button>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <button class="btn" onclick="testEndpoint('/api/v1/crop-advice/languages')">Get Supported Languages</button>
+                    </div>
+                    <div class="form-col">
+                        <button class="btn" onclick="testEndpoint('/api/v1/crop-advice/soil-types')">Get Soil Types</button>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <button class="btn" onclick="testEndpoint('/api/v1/crop-advice/seasons')">Get Seasons</button>
+                    </div>
+                    <div class="form-col">
+                        <button class="btn" onclick="testEndpoint('/api/v1/crop-advice/stats')">Get API Stats</button>
+                    </div>
+                </div>
+
+                <div id="apiResponse" class="response-section" style="display: none;">
+                    <h3>API Response</h3>
+                    <div id="apiResponseContent" class="response-content"></div>
+                </div>
+            </div>
+
+            <!-- Bulk Test Tab -->
+            <div id="bulk-test" class="tab-content">
+                <h2>Bulk Testing</h2>
+                <p>Run multiple test scenarios automatically to verify API performance:</p>
+                
+                <button class="btn" onclick="runBulkTest()" id="bulkTestBtn">
+                    Run All Test Scenarios
+                </button>
+
+                <div id="bulkTestResults" class="response-section" style="display: none;">
+                    <h3>Bulk Test Results</h3>
+                    <div id="bulkTestContent" class="response-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000';
+        let currentResponse = null;
+
+        // Check API status on load
+        window.onload = function() {
+            checkApiStatus();
+        };
+
+        // Switch tabs
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Check API status
+        async function checkApiStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('statusIndicator').className = 'status-indicator status-online';
+                    document.getElementById('statusText').textContent = 'Online ✅';
+                } else {
+                    throw new Error('API not responding');
+                }
+            } catch (error) {
+                document.getElementById('statusIndicator').className = 'status-indicator status-offline';
+                document.getElementById('statusText').textContent = 'Offline ❌';
+            }
+        }
+
+        // Crop advice form submission
+        document.getElementById('cropAdviceForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const responseDiv = document.getElementById('cropResponse');
+            const responseContent = document.getElementById('cropResponseContent');
+            
+            // Prepare request data
+            const formData = {
+                question: document.getElementById('question').value,
+                language: document.getElementById('language').value,
+                farmerContext: {}
+            };
+
+            // Add optional context fields
+            const contextFields = ['location', 'soilType', 'season', 'farmSize', 'irrigation', 'experience', 'budget'];
+            contextFields.forEach(field => {
+                const value = document.getElementById(field).value;
+                if (value) {
+                    formData.farmerContext[field] = value;
+                }
+            });
+
+            // Show loading state
+            submitBtn.innerHTML = '<span class="loading"></span>Getting Recommendations...';
+            submitBtn.disabled = true;
+            responseDiv.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/crop-advice`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                currentResponse = data;
+
+                // Display response
+                responseDiv.style.display = 'block';
+                responseDiv.className = response.ok ? 'response-section success' : 'response-section error';
+                
+                if (response.ok && data.success) {
+                    displayCropAdviceResponse(data.data);
+                } else {
+                    responseContent.textContent = JSON.stringify(data, null, 2);
+                }
+
+            } catch (error) {
+                responseDiv.style.display = 'block';
+                responseDiv.className = 'response-section error';
+                responseContent.textContent = `Error: ${error.message}`;
+            } finally {
+                submitBtn.innerHTML = 'Get Crop Recommendations';
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Display formatted crop advice response
+        function displayCropAdviceResponse(data) {
+            const responseContent = document.getElementById('cropResponseContent');
+            
+            let html = `
+                <div style="font-family: Arial, sans-serif;">
+                    <h4 style="color: #2d5016; margin-bottom: 15px;">🌾 Crop Recommendation Results</h4>
+                    
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <strong>Original Question:</strong><br>
+                        <em>${data.originalQuestion}</em>
+                    </div>
+            `;
+
+            if (data.translatedQuestion && data.language !== 'en') {
+                html += `
+                    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <strong>Translated to English:</strong><br>
+                        <em>${data.translatedQuestion}</em>
+                    </div>
+                `;
+            }
+
+            html += `
+                <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <strong>🤖 AI Response (English):</strong><br>
+                    ${data.englishResponse}
+                </div>
+            `;
+
+            if (data.nativeResponse && data.language !== 'en') {
+                html += `
+                    <div style="background: #fff3e0; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <strong>🌐 Response in Your Language:</strong><br>
+                        ${data.nativeResponse}
+                    </div>
+                `;
+            }
+
+            if (data.recommendations && data.recommendations.length > 0) {
+                html += `<div class="recommendations-grid">`;
+                data.recommendations.forEach(rec => {
+                    html += `
+                        <div class="recommendation-card">
+                            <h5>🌱 ${rec.crop}</h5>
+                            <span class="suitability ${rec.suitability}">${rec.suitability.toUpperCase()} SUITABILITY</span>
+                            <p><strong>Duration:</strong> ${rec.duration}</p>
+                            <p><strong>Water:</strong> ${rec.waterRequirement}</p>
+                            <p><strong>Reason:</strong> ${rec.reason}</p>
+                            <p><strong>Benefits:</strong> ${rec.benefits}</p>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            }
+
+            if (data.additionalTips && data.additionalTips.length > 0) {
+                html += `
+                    <div class="tips-section">
+                        <h5>💡 Additional Tips</h5>
+                        <ul>
+                            ${data.additionalTips.map(tip => `<li>${tip}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            html += `
+                <div style="background: #f1f3f4; padding: 15px; border-radius: 8px; margin-top: 15px; font-size: 0.9em;">
+                    <strong>⚡ Performance:</strong> ${data.processingTime || 'N/A'}<br>
+                    <strong>🌍 Language:</strong> ${data.language}<br>
+                    <strong>📍 Context:</strong> ${Object.keys(data.farmerContext || {}).length} parameters provided
+                </div>
+            `;
+
+            html += `</div>`;
+            responseContent.innerHTML = html;
+        }
+
+        // Load predefined scenarios
+        function loadScenario(scenario) {
+            const scenarios = {
+                'maharashtra-cotton': {
+                    question: "My cotton crop is not growing well. What should I do?",
+                    language: "en",
+                    location: "Maharashtra",
+                    soilType: "black",
+                    season: "kharif",
+                    farmSize: "5 acres",
+                    irrigation: "rainfed",
+                    experience: "intermediate"
+                },
+                'punjab-wheat': {
+                    question: "Which wheat variety should I plant for better yield?",
+                    language: "en",
+                    location: "Punjab",
+                    soilType: "alluvial",
+                    season: "rabi",
+                    farmSize: "10 acres",
+                    irrigation: "irrigated",
+                    experience: "experienced"
+                },
+                'rajasthan-desert': {
+                    question: "What can I grow in desert conditions with minimal water?",
+                    language: "en",
+                    location: "Rajasthan",
+                    soilType: "sandy",
+                    season: "rabi",
+                    farmSize: "3 acres",
+                    irrigation: "rainfed",
+                    experience: "beginner"
+                },
+                'bengal-rice': {
+                    question: "How can I improve my rice yield in monsoon season?",
+                    language: "en",
+                    location: "West Bengal",
+                    soilType: "alluvial",
+                    season: "kharif",
+                    farmSize: "2 acres",
+                    irrigation: "irrigated",
+                    experience: "intermediate"
+                },
+                'karnataka-multi': {
+                    question: "I want to grow multiple crops for better income. What do you suggest?",
+                    language: "en",
+                    location: "Karnataka",
+                    soilType: "red",
+                    season: "kharif",
+                    farmSize: "7 acres",
+                    irrigation: "drip",
+                    experience: "experienced"
+                },
+                'hindi-farmer': {
+                    question: "मेरी मिट्टी काली है और बारिश कम होती है। कौन सी फसल उगाऊं?",
+                    language: "hi",
+                    location: "Madhya Pradesh",
+                    soilType: "black",
+                    season: "kharif",
+                    farmSize: "2 acres",
+                    irrigation: "rainfed",
+                    experience: "beginner"
+                }
+            };
+
+            const data = scenarios[scenario];
+            if (data) {
+                // Fill form fields
+                Object.keys(data).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.value = data[key];
+                    }
+                });
+
+                // Switch to crop advice tab
+                switchTab('crop-advice');
+                document.querySelector('.tab').classList.remove('active');
+                document.querySelector('.tab').classList.add('active');
+            }
+        }
+
+        // Test individual endpoints
+        async function testEndpoint(endpoint) {
+            const responseDiv = document.getElementById('apiResponse');
+            const responseContent = document.getElementById('apiResponseContent');
+
+            responseDiv.style.display = 'block';
+            responseContent.textContent = 'Loading...';
+
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`);
+                const data = await response.json();
+
+                responseDiv.className = response.ok ? 'response-section success' : 'response-section error';
+                responseContent.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                responseDiv.className = 'response-section error';
+                responseContent.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        // Run bulk test
+        async function runBulkTest() {
+            const btn = document.getElementById('bulkTestBtn');
+            const resultsDiv = document.getElementById('bulkTestResults');
+            const resultsContent = document.getElementById('bulkTestContent');
+
+            btn.innerHTML = '<span class="loading"></span>Running Tests...';
+            btn.disabled = true;
+            resultsDiv.style.display = 'block';
+            resultsContent.textContent = 'Starting bulk test...\n\n';
+
+            const testScenarios = [
+                {
+                    name: "Maharashtra Cotton Farmer",
+                    data: {
+                        question: "My cotton crop is not growing well. What should I do?",
+                        language: "en",
+                        farmerContext: {
+                            location: "Maharashtra",
+                            soilType: "black",
+                            season: "kharif",
+                            farmSize: "5 acres",
+                            irrigation: "rainfed"
+                        }
+                    }
+                },
+                {
+                    name: "Punjab Wheat Farmer",
+                    data: {
+                        question: "Which wheat variety should I plant for better yield?",
+                        language: "en",
+                        farmerContext: {
+                            location: "Punjab",
+                            soilType: "alluvial",
+                            season: "rabi",
+                            farmSize: "10 acres",
+                            irrigation: "irrigated"
+                        }
+                    }
+                },
+                {
+                    name: "Hindi Language Test",
+                    data: {
+                        question: "मेरी मिट्टी काली है और बारिश कम होती है। कौन सी फसल उगाऊं?",
+                        language: "hi",
+                        farmerContext: {
+                            location: "Madhya Pradesh",
+                            soilType: "black",
+                            season: "kharif"
+                        }
+                    }
+                }
+            ];
+
+            let results = '';
+            let successCount = 0;
+
+            for (let i = 0; i < testScenarios.length; i++) {
+                const scenario = testScenarios[i];
+                results += `${i + 1}. Testing: ${scenario.name}\n`;
+                resultsContent.textContent = results + '   ⏳ Processing...\n\n';
+
+                try {
+                    const startTime = Date.now();
+                    const response = await fetch(`${API_BASE}/api/v1/crop-advice`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(scenario.data)
+                    });
+
+                    const data = await response.json();
+                    const duration = Date.now() - startTime;
+
+                    if (response.ok && data.success) {
+                        results += `   ✅ SUCCESS (${duration}ms)\n`;
+                        results += `   📝 Response: ${data.data.englishResponse.substring(0, 100)}...\n`;
+                        results += `   🌱 Top Recommendation: ${data.data.recommendations[0]?.crop || 'N/A'}\n`;
+                        successCount++;
+                    } else {
+                        results += `   ❌ FAILED: ${data.error?.message || 'Unknown error'}\n`;
+                    }
+                } catch (error) {
+                    results += `   ❌ ERROR: ${error.message}\n`;
+                }
+
+                results += '\n';
+                resultsContent.textContent = results;
+
+                // Add delay between requests
+                if (i < testScenarios.length - 1) {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+            }
+
+            results += `\n📊 SUMMARY:\n`;
+            results += `✅ Successful: ${successCount}/${testScenarios.length}\n`;
+            results += `❌ Failed: ${testScenarios.length - successCount}/${testScenarios.length}\n`;
+            results += `📈 Success Rate: ${Math.round((successCount / testScenarios.length) * 100)}%\n`;
+
+            resultsContent.textContent = results;
+            btn.innerHTML = 'Run All Test Scenarios';
+            btn.disabled = false;
+        }
+    </script>
+</body>
+</html>

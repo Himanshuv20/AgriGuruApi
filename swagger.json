@@ -1,0 +1,728 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "AgriGuru API",
+    "description": "AI-powered multilingual farming assistant for Indian farmers. Provides personalized crop recommendations in multiple Indian languages using advanced translation services and agricultural expertise.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "AgriGuru API Support",
+      "email": "support@agriguru.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development server"
+    },
+    {
+      "url": "http://localhost:4000",
+      "description": "Alternative development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Health",
+      "description": "Health check endpoints"
+    },
+    {
+      "name": "Crop Advice",
+      "description": "Crop recommendation and farming advice endpoints"
+    },
+    {
+      "name": "API Info",
+      "description": "API information and metadata"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Health check",
+        "description": "Check if the API is running and healthy",
+        "operationId": "getHealth",
+        "responses": {
+          "200": {
+            "description": "API is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                },
+                "example": {
+                  "status": "healthy",
+                  "timestamp": "2025-07-12T10:30:00.000Z",
+                  "version": "1.0.0",
+                  "environment": "development"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1": {
+      "get": {
+        "tags": ["API Info"],
+        "summary": "Get API information",
+        "description": "Get basic information about the API, endpoints, and supported languages",
+        "operationId": "getApiInfo",
+        "responses": {
+          "200": {
+            "description": "API information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiInfoResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/crop-advice": {
+      "post": {
+        "tags": ["Crop Advice"],
+        "summary": "Get crop recommendations",
+        "description": "Get personalized crop recommendations based on farmer's question, location, soil type, season, and other contextual information. Supports multiple Indian languages with automatic translation.",
+        "operationId": "getCropAdvice",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CropAdviceRequest"
+              },
+              "examples": {
+                "english_example": {
+                  "summary": "English crop advice request",
+                  "value": {
+                    "question": "What crop should I grow in black soil during monsoon season?",
+                    "language": "en",
+                    "farmerContext": {
+                      "location": "Maharashtra",
+                      "soilType": "black",
+                      "season": "kharif",
+                      "farmSize": "5 acres",
+                      "irrigation": "rainfed",
+                      "experience": "intermediate"
+                    }
+                  }
+                },
+                "hindi_example": {
+                  "summary": "Hindi crop advice request",
+                  "value": {
+                    "question": "मेरी मिट्टी काली है और बारिश कम होती है। कौन सी फसल उगाऊं?",
+                    "language": "hi",
+                    "farmerContext": {
+                      "location": "Madhya Pradesh",
+                      "soilType": "black",
+                      "season": "kharif"
+                    }
+                  }
+                },
+                "cotton_problem": {
+                  "summary": "Cotton farming problem",
+                  "value": {
+                    "question": "My cotton crop is not growing well. What should I do?",
+                    "language": "en",
+                    "farmerContext": {
+                      "location": "Gujarat",
+                      "soilType": "black",
+                      "season": "kharif",
+                      "farmSize": "10 acres",
+                      "irrigation": "drip",
+                      "experience": "experienced"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful crop advice response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CropAdviceResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "success": false,
+                  "error": {
+                    "message": "Validation failed",
+                    "code": "VALIDATION_ERROR",
+                    "details": [
+                      {
+                        "field": "question",
+                        "message": "Question is required"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": "Too many requests from this IP, please try again later.",
+                  "retryAfter": 900
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/crop-advice/languages": {
+      "get": {
+        "tags": ["Crop Advice"],
+        "summary": "Get supported languages",
+        "description": "Get list of all supported languages for crop advice",
+        "operationId": "getSupportedLanguages",
+        "responses": {
+          "200": {
+            "description": "List of supported languages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LanguagesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/crop-advice/soil-types": {
+      "get": {
+        "tags": ["Crop Advice"],
+        "summary": "Get supported soil types",
+        "description": "Get list of all supported soil types with descriptions",
+        "operationId": "getSoilTypes",
+        "responses": {
+          "200": {
+            "description": "List of supported soil types",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SoilTypesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/crop-advice/seasons": {
+      "get": {
+        "tags": ["Crop Advice"],
+        "summary": "Get cropping seasons",
+        "description": "Get list of cropping seasons in India with typical crops",
+        "operationId": "getCroppingSeasons",
+        "responses": {
+          "200": {
+            "description": "List of cropping seasons",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/crop-advice/stats": {
+      "get": {
+        "tags": ["Crop Advice"],
+        "summary": "Get API statistics",
+        "description": "Get API usage statistics and cache performance metrics",
+        "operationId": "getApiStats",
+        "responses": {
+          "200": {
+            "description": "API statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["healthy", "unhealthy"],
+            "description": "Health status of the API"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Current server timestamp"
+          },
+          "version": {
+            "type": "string",
+            "description": "API version"
+          },
+          "environment": {
+            "type": "string",
+            "description": "Current environment (development, production, etc.)"
+          }
+        },
+        "required": ["status", "timestamp"]
+      },
+      "ApiInfoResponse": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "API name"
+          },
+          "version": {
+            "type": "string",
+            "description": "API version"
+          },
+          "description": {
+            "type": "string",
+            "description": "API description"
+          },
+          "endpoints": {
+            "type": "object",
+            "description": "Available endpoints"
+          },
+          "supportedLanguages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of supported language codes"
+          }
+        }
+      },
+      "CropAdviceRequest": {
+        "type": "object",
+        "required": ["question", "language"],
+        "properties": {
+          "question": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 500,
+            "description": "Farmer's question about crops or farming",
+            "example": "What crop should I grow in black soil during monsoon?"
+          },
+          "language": {
+            "type": "string",
+            "enum": ["en", "hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "ur"],
+            "description": "Language code for the question and response",
+            "example": "en"
+          },
+          "farmerContext": {
+            "$ref": "#/components/schemas/FarmerContext"
+          }
+        }
+      },
+      "FarmerContext": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string",
+            "description": "State or region name",
+            "example": "Maharashtra"
+          },
+          "soilType": {
+            "type": "string",
+            "enum": ["black", "red", "alluvial", "sandy", "clayey", "loamy", "laterite", "mountain"],
+            "description": "Type of soil on the farm",
+            "example": "black"
+          },
+          "season": {
+            "type": "string",
+            "enum": ["kharif", "rabi", "zaid"],
+            "description": "Cropping season",
+            "example": "kharif"
+          },
+          "farmSize": {
+            "type": "string",
+            "description": "Size of the farm",
+            "example": "5 acres"
+          },
+          "irrigation": {
+            "type": "string",
+            "enum": ["rainfed", "irrigated", "drip", "sprinkler", "canal", "borewell"],
+            "description": "Type of irrigation available",
+            "example": "rainfed"
+          },
+          "experience": {
+            "type": "string",
+            "enum": ["beginner", "intermediate", "experienced"],
+            "description": "Farmer's experience level",
+            "example": "intermediate"
+          },
+          "budget": {
+            "type": "string",
+            "description": "Available budget (Low, Medium, High)",
+            "example": "Medium"
+          }
+        }
+      },
+      "CropAdviceResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the request was successful"
+          },
+          "data": {
+            "$ref": "#/components/schemas/CropAdviceData"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Response timestamp"
+          },
+          "processingTime": {
+            "type": "string",
+            "description": "Time taken to process the request",
+            "example": "1250ms"
+          }
+        },
+        "required": ["success", "data"]
+      },
+      "CropAdviceData": {
+        "type": "object",
+        "properties": {
+          "originalQuestion": {
+            "type": "string",
+            "description": "Original question from the farmer"
+          },
+          "translatedQuestion": {
+            "type": "string",
+            "description": "Question translated to English (if not originally in English)"
+          },
+          "englishResponse": {
+            "type": "string",
+            "description": "AI response in English"
+          },
+          "nativeResponse": {
+            "type": "string",
+            "description": "AI response in farmer's native language"
+          },
+          "recommendations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CropRecommendation"
+            },
+            "description": "List of crop recommendations"
+          },
+          "additionalTips": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Additional farming tips"
+          },
+          "language": {
+            "type": "string",
+            "description": "Language code used for the response"
+          },
+          "farmerContext": {
+            "$ref": "#/components/schemas/FarmerContext"
+          },
+          "cached": {
+            "type": "boolean",
+            "description": "Whether this response was served from cache"
+          }
+        }
+      },
+      "CropRecommendation": {
+        "type": "object",
+        "properties": {
+          "crop": {
+            "type": "string",
+            "description": "Name of the recommended crop",
+            "example": "Cotton"
+          },
+          "suitability": {
+            "type": "string",
+            "enum": ["high", "medium", "low"],
+            "description": "Suitability rating for the farmer's conditions",
+            "example": "high"
+          },
+          "duration": {
+            "type": "string",
+            "description": "Growing duration of the crop",
+            "example": "150-180 days"
+          },
+          "waterRequirement": {
+            "type": "string",
+            "description": "Water requirement level",
+            "example": "Medium to High"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Reason why this crop is recommended"
+          },
+          "benefits": {
+            "type": "string",
+            "description": "Benefits of growing this crop"
+          }
+        },
+        "required": ["crop", "suitability", "reason"]
+      },
+      "LanguagesResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "languages": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Language"
+                }
+              },
+              "total": {
+                "type": "integer",
+                "description": "Total number of supported languages"
+              }
+            }
+          }
+        }
+      },
+      "Language": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "ISO language code",
+            "example": "hi"
+          },
+          "name": {
+            "type": "string",
+            "description": "English name of the language",
+            "example": "Hindi"
+          },
+          "nativeName": {
+            "type": "string",
+            "description": "Native name of the language",
+            "example": "हिन्दी"
+          }
+        }
+      },
+      "SoilTypesResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "soilTypes": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SoilType"
+                }
+              },
+              "total": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      },
+      "SoilType": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "black"
+          },
+          "name": {
+            "type": "string",
+            "example": "Black Soil"
+          },
+          "description": {
+            "type": "string",
+            "example": "Rich in clay, good for cotton and sugarcane"
+          }
+        }
+      },
+      "SeasonsResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "seasons": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Season"
+                }
+              },
+              "total": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      },
+      "Season": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "kharif"
+          },
+          "name": {
+            "type": "string",
+            "example": "Kharif (Monsoon)"
+          },
+          "description": {
+            "type": "string",
+            "example": "June-October, rain-fed crops"
+          },
+          "crops": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["Rice", "Cotton", "Sugarcane"]
+          }
+        }
+      },
+      "StatsResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "cache": {
+                "type": "object",
+                "properties": {
+                  "hits": {
+                    "type": "integer",
+                    "description": "Number of cache hits"
+                  },
+                  "misses": {
+                    "type": "integer",
+                    "description": "Number of cache misses"
+                  },
+                  "keys": {
+                    "type": "integer",
+                    "description": "Number of cached keys"
+                  },
+                  "hitRate": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Cache hit rate (0-1)"
+                  }
+                }
+              },
+              "supportedLanguages": {
+                "type": "integer",
+                "description": "Number of supported languages"
+              },
+              "supportedSoilTypes": {
+                "type": "integer",
+                "description": "Number of supported soil types"
+              },
+              "croppingSeasonsSupported": {
+                "type": "integer",
+                "description": "Number of supported cropping seasons"
+              }
+            }
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [false]
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "description": "Error message"
+              },
+              "code": {
+                "type": "string",
+                "description": "Error code"
+              },
+              "details": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "field": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "required": ["message"]
+          }
+        },
+        "required": ["success", "error"]
+      }
+    }
+  }
+}

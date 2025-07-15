@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriGuru API Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2d5016 0%, #3e6b1f 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            background: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-right: 1px solid #e9ecef;
+        }
+
+        .nav-tab:last-child {
+            border-right: none;
+        }
+
+        .nav-tab.active {
+            background: #2d5016;
+            color: white;
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: #f8f9fa;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        h2 {
+            color: #2d5016;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+
+        h3 {
+            color: #2d5016;
+            margin: 2rem 0 1rem 0;
+            font-size: 1.5rem;
+        }
+
+        h4 {
+            color: #3e6b1f;
+            margin: 1.5rem 0 0.5rem 0;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #2d5016;
+        }
+
+        .feature-card h4 {
+            margin-top: 0;
+            color: #2d5016;
+        }
+
+        .feature-card ul {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .endpoint-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .endpoint-header {
+            background: #2d5016;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .http-method {
+            background: rgba(255,255,255,0.2);
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .endpoint-path {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+        }
+
+        .endpoint-content {
+            padding: 1.5rem;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .json-example {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .json-key { color: #9cdcfe; }
+        .json-string { color: #ce9178; }
+        .json-number { color: #b5cea8; }
+        .json-boolean { color: #569cd6; }
+
+        .status-code {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-weight: bold;
+            color: white;
+            margin-right: 0.5rem;
+        }
+
+        .status-200 { background: #28a745; }
+        .status-400 { background: #dc3545; }
+        .status-429 { background: #ffc107; color: #000; }
+        .status-500 { background: #6c757d; }
+
+        .quick-links {
+            background: #e3f2fd;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+            margin: 2rem 0;
+        }
+
+        .quick-links h3 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+
+        .quick-links a {
+            color: #1976d2;
+            text-decoration: none;
+            margin-right: 1rem;
+            font-weight: 600;
+        }
+
+        .quick-links a:hover {
+            text-decoration: underline;
+        }
+
+        .language-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .language-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .language-native {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2d5016;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #2d5016 0%, #3e6b1f 100%);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin: 0.5rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(45, 80, 22, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+
+            .nav-tab {
+                min-width: 50%;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌾 AgriGuru API Documentation</h1>
+        <p>AI-Powered Multilingual Farming Assistant for Indian Farmers</p>
+        <p>Version 1.0.0 | OpenAPI 3.0.3</p>
+    </div>
+
+    <div class="container">
+        <div class="quick-links">
+            <h3>🚀 Quick Links</h3>
+            <a href="#overview">Overview</a>
+            <a href="#authentication">Authentication</a>
+            <a href="#endpoints">API Endpoints</a>
+            <a href="#examples">Code Examples</a>
+            <a href="http://localhost:4000/api-docs" target="_blank">Interactive API Explorer</a>
+            <a href="http://localhost:4000/test.html" target="_blank">Live Testing Interface</a>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('overview')">📖 Overview</button>
+            <button class="nav-tab" onclick="switchTab('endpoints')">🔗 Endpoints</button>
+            <button class="nav-tab" onclick="switchTab('examples')">💻 Examples</button>
+            <button class="nav-tab" onclick="switchTab('languages')">🌍 Languages</button>
+            <button class="nav-tab" onclick="switchTab('sdk')">🛠️ SDKs</button>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <h2>API Overview</h2>
+            <p>The AgriGuru API provides AI-powered crop recommendations and farming advice in multiple Indian languages. It combines advanced natural language processing, agricultural expertise, and multilingual translation capabilities to help farmers make informed decisions.</p>
+
+            <div class="overview-grid">
+                <div class="feature-card">
+                    <h4>🌍 Multilingual Support</h4>
+                    <p>Support for 11 Indian languages including Hindi, Bengali, Tamil, Telugu, and more.</p>
+                    <ul>
+                        <li>Automatic language detection</li>
+                        <li>Bidirectional translation</li>
+                        <li>Native script support</li>
+                        <li>Fallback translation system</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h4>🌱 Smart Crop Recommendations</h4>
+                    <p>AI-powered recommendations based on location, soil, season, and farming conditions.</p>
+                    <ul>
+                        <li>Contextual crop suggestions</li>
+                        <li>Suitability scoring</li>
+                        <li>Water requirement analysis</li>
+                        <li>Economic viability assessment</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h4>🚀 High Performance</h4>
+                    <p>Optimized for speed and reliability with advanced caching and error handling.</p>
+                    <ul>
+                        <li>Response caching</li>
+                        <li>Rate limiting protection</li>
+                        <li>Graceful error handling</li>
+                        <li>Sub-second response times</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h4>📊 Rich Context Understanding</h4>
+                    <p>Comprehensive understanding of Indian farming contexts and regional variations.</p>
+                    <ul>
+                        <li>8 soil type classifications</li>
+                        <li>3 cropping seasons (Kharif, Rabi, Zaid)</li>
+                        <li>Multiple irrigation methods</li>
+                        <li>Experience-based recommendations</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>🏗️ Base URLs</h3>
+            <div class="code-block">
+Development: http://localhost:3000<br>
+Alternative: http://localhost:4000
+            </div>
+
+            <h3>🔒 Authentication</h3>
+            <p>Currently, the API does not require authentication for basic usage. Rate limiting is applied per IP address to ensure fair usage.</p>
+
+            <h3>📝 Rate Limiting</h3>
+            <p>The API implements rate limiting to ensure service availability:</p>
+            <ul>
+                <li><strong>Rate Limit:</strong> 100 requests per 15 minutes per IP</li>
+                <li><strong>Headers:</strong> Rate limit information is provided in response headers</li>
+                <li><strong>Reset:</strong> Rate limits reset every 15 minutes</li>
+            </ul>
+
+            <h3>🎯 Response Format</h3>
+            <p>All API responses follow a consistent JSON format:</p>
+            <div class="json-example">
+{
+  <span class="json-key">"success"</span>: <span class="json-boolean">true</span>,
+  <span class="json-key">"data"</span>: { <span class="json-string">/* response data */</span> },
+  <span class="json-key">"timestamp"</span>: <span class="json-string">"2025-07-12T10:30:00.000Z"</span>,
+  <span class="json-key">"processingTime"</span>: <span class="json-string">"1250ms"</span>
+}
+            </div>
+        </div>
+
+        <!-- Endpoints Tab -->
+        <div id="endpoints" class="tab-content">
+            <h2>API Endpoints</h2>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="http-method">GET</span>
+                    <span class="endpoint-path">/health</span>
+                </div>
+                <div class="endpoint-content">
+                    <h4>Health Check</h4>
+                    <p>Check if the API is running and healthy.</p>
+                    
+                    <h4>Response</h4>
+                    <span class="status-code status-200">200</span> Success
+                    <div class="json-example">
+{
+  <span class="json-key">"status"</span>: <span class="json-string">"healthy"</span>,
+  <span class="json-key">"timestamp"</span>: <span class="json-string">"2025-07-12T10:30:00.000Z"</span>,
+  <span class="json-key">"version"</span>: <span class="json-string">"1.0.0"</span>,
+  <span class="json-key">"environment"</span>: <span class="json-string">"development"</span>
+}
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="http-method">POST</span>
+                    <span class="endpoint-path">/api/v1/crop-advice</span>
+                </div>
+                <div class="endpoint-content">
+                    <h4>Get Crop Recommendations</h4>
+                    <p>Get personalized crop recommendations based on farmer's question and context.</p>
+                    
+                    <h4>Request Body</h4>
+                    <div class="json-example">
+{
+  <span class="json-key">"question"</span>: <span class="json-string">"What crop should I grow in black soil during monsoon?"</span>,
+  <span class="json-key">"language"</span>: <span class="json-string">"en"</span>,
+  <span class="json-key">"farmerContext"</span>: {
+    <span class="json-key">"location"</span>: <span class="json-string">"Maharashtra"</span>,
+    <span class="json-key">"soilType"</span>: <span class="json-string">"black"</span>,
+    <span class="json-key">"season"</span>: <span class="json-string">"kharif"</span>,
+    <span class="json-key">"farmSize"</span>: <span class="json-string">"5 acres"</span>,
+    <span class="json-key">"irrigation"</span>: <span class="json-string">"rainfed"</span>
+  }
+}
+                    </div>
+
+                    <h4>Responses</h4>
+                    <span class="status-code status-200">200</span> Success
+                    <span class="status-code status-400">400</span> Bad Request
+                    <span class="status-code status-429">429</span> Too Many Requests
+                    <span class="status-code status-500">500</span> Internal Server Error
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="http-method">GET</span>
+                    <span class="endpoint-path">/api/v1/crop-advice/languages</span>
+                </div>
+                <div class="endpoint-content">
+                    <h4>Get Supported Languages</h4>
+                    <p>Retrieve list of all supported languages with native names.</p>
+                    
+                    <h4>Response</h4>
+                    <span class="status-code status-200">200</span> Success
+                    <div class="json-example">
+{
+  <span class="json-key">"success"</span>: <span class="json-boolean">true</span>,
+  <span class="json-key">"data"</span>: {
+    <span class="json-key">"languages"</span>: [
+      {
+        <span class="json-key">"code"</span>: <span class="json-string">"hi"</span>,
+        <span class="json-key">"name"</span>: <span class="json-string">"Hindi"</span>,
+        <span class="json-key">"nativeName"</span>: <span class="json-string">"हिन्दी"</span>
+      }
+    ],
+    <span class="json-key">"total"</span>: <span class="json-number">11</span>
+  }
+}
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="http-method">GET</span>
+                    <span class="endpoint-path">/api/v1/crop-advice/soil-types</span>
+                </div>
+                <div class="endpoint-content">
+                    <h4>Get Soil Types</h4>
+                    <p>Retrieve list of supported soil types with descriptions.</p>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="http-method">GET</span>
+                    <span class="endpoint-path">/api/v1/crop-advice/seasons</span>
+                </div>
+                <div class="endpoint-content">
+                    <h4>Get Cropping Seasons</h4>
+                    <p>Retrieve list of Indian cropping seasons with typical crops.</p>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="http-method">GET</span>
+                    <span class="endpoint-path">/api/v1/crop-advice/stats</span>
+                </div>
+                <div class="endpoint-content">
+                    <h4>Get API Statistics</h4>
+                    <p>Retrieve API usage statistics and performance metrics.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Examples Tab -->
+        <div id="examples" class="tab-content">
+            <h2>Code Examples</h2>
+
+            <h3>🟨 JavaScript (Fetch API)</h3>
+            <div class="code-block">
+const getCropAdvice = async () => {
+  try {
+    const response = await fetch('http://localhost:4000/api/v1/crop-advice', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        question: 'What crop should I grow in black soil during monsoon?',
+        language: 'en',
+        farmerContext: {
+          location: 'Maharashtra',
+          soilType: 'black',
+          season: 'kharif',
+          farmSize: '5 acres'
+        }
+      })
+    });
+
+    const data = await response.json();
+    console.log('Recommendations:', data.data.recommendations);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+            </div>
+
+            <h3>🐍 Python (requests)</h3>
+            <div class="code-block">
+import requests
+import json
+
+def get_crop_advice():
+    url = "http://localhost:4000/api/v1/crop-advice"
+    
+    payload = {
+        "question": "What crop should I grow in black soil during monsoon?",
+        "language": "en",
+        "farmerContext": {
+            "location": "Maharashtra",
+            "soilType": "black",
+            "season": "kharif",
+            "farmSize": "5 acres"
+        }
+    }
+    
+    headers = {
+        "Content-Type": "application/json"
+    }
+    
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()
+        
+        data = response.json()
+        print("Recommendations:", data['data']['recommendations'])
+        
+    except requests.exceptions.RequestException as e:
+        print(f"Error: {e}")
+
+get_crop_advice()
+            </div>
+
+            <h3>🟢 Node.js (axios)</h3>
+            <div class="code-block">
+const axios = require('axios');
+
+const getCropAdvice = async () => {
+  try {
+    const response = await axios.post('http://localhost:4000/api/v1/crop-advice', {
+      question: 'What crop should I grow in black soil during monsoon?',
+      language: 'en',
+      farmerContext: {
+        location: 'Maharashtra',
+        soilType: 'black',
+        season: 'kharif',
+        farmSize: '5 acres'
+      }
+    });
+
+    console.log('Success:', response.data.success);
+    console.log('Recommendations:', response.data.data.recommendations);
+  } catch (error) {
+    console.error('Error:', error.response?.data || error.message);
+  }
+};
+
+getCropAdvice();
+            </div>
+
+            <h3>🔵 cURL</h3>
+            <div class="code-block">
+curl -X POST http://localhost:4000/api/v1/crop-advice \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "What crop should I grow in black soil during monsoon?",
+    "language": "en",
+    "farmerContext": {
+      "location": "Maharashtra",
+      "soilType": "black",
+      "season": "kharif",
+      "farmSize": "5 acres"
+    }
+  }'
+            </div>
+
+            <h3>🌍 Multilingual Example (Hindi)</h3>
+            <div class="code-block">
+// Hindi language example
+const hindiRequest = {
+  question: "मेरी मिट्टी काली है और बारिश कम होती है। कौन सी फसल उगाऊं?",
+  language: "hi",
+  farmerContext: {
+    location: "Madhya Pradesh",
+    soilType: "black",
+    season: "kharif"
+  }
+};
+
+fetch('http://localhost:4000/api/v1/crop-advice', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(hindiRequest)
+})
+.then(response => response.json())
+.then(data => {
+  console.log('Original (Hindi):', data.data.originalQuestion);
+  console.log('Translated:', data.data.translatedQuestion);
+  console.log('Response (Hindi):', data.data.nativeResponse);
+});
+            </div>
+        </div>
+
+        <!-- Languages Tab -->
+        <div id="languages" class="tab-content">
+            <h2>Supported Languages</h2>
+            <p>AgriGuru API supports 11 Indian languages with full bidirectional translation capabilities:</p>
+
+            <div class="language-grid">
+                <div class="language-card">
+                    <div class="language-native">English</div>
+                    <div>Code: <strong>en</strong></div>
+                </div>
+                <div class="language-card">
+                    <div class="language-native">हिन्दी</div>
+                    <div>Hindi | Code: <strong>hi</strong></div>
+                </div>
+                <div class="language-card">
+                    <div class="language-native">বাংলা</div>
+                    <div>Bengali | Code: <strong>bn</strong></div>
+                </div>
+                <div class="language-card">
+                    <div class="language-native">தமிழ்</div>
+                    <div>Tamil | Code: <strong>ta</strong></div>
+                </div>
+                <div class="language-card">
+                    <div class="language-native">తెలుగు</div>
+                    <div>Telugu | Code: <strong>te</strong></div>
+                </div>
+                <div class="language-card">
+                    <div class="language-native">मराठी</div>
+                    <div>Marathi | Code: <strong>mr</strong></div>
+                </div>
+                <div class="language-card">
+                    <div class="language-native">ગુજરાતી</div>
+                    <div>Gujarati | Code: <strong>gu</strong></div>
+                </div>
+                <div class="language-card">
+                    <div class="language-native">ಕನ್ನಡ</div>
+                    <div>Kannada | Code: <strong>kn</strong></div>
+                </div>
+                <div class="language-card">
+                    <div class="language-native">മലയാളം</div>
+                    <div>Malayalam | Code: <strong>ml</strong></div>
+                </div>
+                <div class="language-card">
+                    <div class="language-native">ਪੰਜਾਬੀ</div>
+                    <div>Punjabi | Code: <strong>pa</strong></div>
+                </div>
+                <div class="language-card">
+                    <div class="language-native">اردو</div>
+                    <div>Urdu | Code: <strong>ur</strong></div>
+                </div>
+            </div>
+
+            <h3>🔄 Translation Features</h3>
+            <div class="overview-grid">
+                <div class="feature-card">
+                    <h4>Multi-Provider System</h4>
+                    <ul>
+                        <li>Facebook NLLB-200 (Primary)</li>
+                        <li>Google mT5 (Secondary)</li>
+                        <li>Helsinki-NLP OPUS (Tertiary)</li>
+                        <li>Predefined fallbacks</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h4>Smart Fallbacks</h4>
+                    <ul>
+                        <li>Graceful degradation</li>
+                        <li>Agriculture-specific terms</li>
+                        <li>Context preservation</li>
+                        <li>Error recovery</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- SDK Tab -->
+        <div id="sdk" class="tab-content">
+            <h2>SDKs & Tools</h2>
+
+            <div class="overview-grid">
+                <div class="feature-card">
+                    <h4>🌐 Interactive API Explorer</h4>
+                    <p>Swagger UI for testing and exploring the API in real-time.</p>
+                    <a href="http://localhost:4000/api-docs" target="_blank" class="btn">Open API Explorer</a>
+                </div>
+
+                <div class="feature-card">
+                    <h4>🧪 Live Testing Interface</h4>
+                    <p>Comprehensive web interface for testing all API features.</p>
+                    <a href="http://localhost:4000/test.html" target="_blank" class="btn">Open Test Interface</a>
+                </div>
+
+                <div class="feature-card">
+                    <h4>📋 Postman Collection</h4>
+                    <p>Ready-to-use Postman collection with all endpoints and examples.</p>
+                    <button class="btn" onclick="downloadPostmanCollection()">Download Collection</button>
+                </div>
+
+                <div class="feature-card">
+                    <h4>📖 OpenAPI Specification</h4>
+                    <p>Complete OpenAPI 3.0.3 specification for code generation.</p>
+                    <a href="http://localhost:4000/swagger.json" target="_blank" class="btn">Download Spec</a>
+                </div>
+            </div>
+
+            <h3>🛠️ Code Generation</h3>
+            <p>You can generate client SDKs for various programming languages using the OpenAPI specification:</p>
+
+            <div class="code-block">
+# Install OpenAPI Generator
+npm install @openapitools/openapi-generator-cli -g
+
+# Generate JavaScript SDK
+openapi-generator-cli generate \
+  -i http://localhost:4000/swagger.json \
+  -g javascript \
+  -o ./agriguru-js-sdk
+
+# Generate Python SDK
+openapi-generator-cli generate \
+  -i http://localhost:4000/swagger.json \
+  -g python \
+  -o ./agriguru-python-sdk
+
+# Generate Java SDK
+openapi-generator-cli generate \
+  -i http://localhost:4000/swagger.json \
+  -g java \
+  -o ./agriguru-java-sdk
+            </div>
+
+            <h3>📱 Sample Applications</h3>
+            <div class="feature-card">
+                <h4>React.js Sample App</h4>
+                <p>Complete React application demonstrating API integration with form handling, multilingual support, and responsive design.</p>
+                <button class="btn btn-secondary" onclick="alert('Sample app coming soon!')">Coming Soon</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        function downloadPostmanCollection() {
+            const collection = {
+                "info": {
+                    "name": "AgriGuru API",
+                    "description": "AI-powered multilingual farming assistant",
+                    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+                },
+                "item": [
+                    {
+                        "name": "Health Check",
+                        "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                                "raw": "http://localhost:4000/health",
+                                "protocol": "http",
+                                "host": ["localhost"],
+                                "port": "4000",
+                                "path": ["health"]
+                            }
+                        }
+                    },
+                    {
+                        "name": "Get Crop Advice",
+                        "request": {
+                            "method": "POST",
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                }
+                            ],
+                            "body": {
+                                "mode": "raw",
+                                "raw": JSON.stringify({
+                                    "question": "What crop should I grow in black soil during monsoon?",
+                                    "language": "en",
+                                    "farmerContext": {
+                                        "location": "Maharashtra",
+                                        "soilType": "black",
+                                        "season": "kharif"
+                                    }
+                                }, null, 2)
+                            },
+                            "url": {
+                                "raw": "http://localhost:4000/api/v1/crop-advice",
+                                "protocol": "http",
+                                "host": ["localhost"],
+                                "port": "4000",
+                                "path": ["api", "v1", "crop-advice"]
+                            }
+                        }
+                    }
+                ]
+            };
+
+            const blob = new Blob([JSON.stringify(collection, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'AgriGuru-API.postman_collection.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
