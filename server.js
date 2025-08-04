@@ -15,8 +15,45 @@ const { validateApiKey } = require('./src/middleware/auth');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Security middleware
-app.use(helmet());
+// Security middleware with permissive CSP for development
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: [
+        "'self'", 
+        "'unsafe-inline'", 
+        "'unsafe-eval'",
+        "http://gc.kis.v2.scr.kaspersky-labs.com",
+        "ws://gc.kis.v2.scr.kaspersky-labs.com"
+      ],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: [
+        "'self'", 
+        "http://localhost:*", 
+        "ws://localhost:*", 
+        "https:",
+        "http://gc.kis.v2.scr.kaspersky-labs.com",
+        "ws://gc.kis.v2.scr.kaspersky-labs.com"
+      ],
+      fontSrc: ["'self'", "https:", "data:"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'none'"],
+    },
+  },
+}));
+
+// Additional CSP header to ensure inline scripts work
+app.use((req, res, next) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://gc.kis.v2.scr.kaspersky-labs.com ws://gc.kis.v2.scr.kaspersky-labs.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' http://localhost:* ws://localhost:* https: http://gc.kis.v2.scr.kaspersky-labs.com ws://gc.kis.v2.scr.kaspersky-labs.com; font-src 'self' https: data:; object-src 'none'; media-src 'self'; frame-src 'none';"
+  );
+  next();
+});
+
 app.use(cors({
   origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
   credentials: true
