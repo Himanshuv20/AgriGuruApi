@@ -34,7 +34,7 @@ async function runComprehensiveTests() {
   // Test 2: API Info
   console.log('\n🔍 Test 2: API Information');
   try {
-    const response = await axios.get('${API_BASE}/api/v1', { timeout: 5000 });
+    const response = await axios.get(`${API_BASE}/api/v1`, { timeout: 5000 });
     if (response.status === 200 && response.data.name === 'AgriGuru API') {
       console.log('✅ PASSED - API info accessible');
       testResults.passed++;
@@ -50,7 +50,7 @@ async function runComprehensiveTests() {
   // Test 3: Supported Languages
   console.log('\n🔍 Test 3: Supported Languages');
   try {
-    const response = await axios.get('${API_BASE}/api/v1/crop-advice/languages', { timeout: 5000 });
+    const response = await axios.get(`${API_BASE}/api/v1/crop-advice/languages`, { timeout: 5000 });
     if (response.status === 200 && response.data.data.languages.length >= 10) {
       console.log(`✅ PASSED - ${response.data.data.languages.length} languages supported`);
       testResults.passed++;
@@ -66,7 +66,7 @@ async function runComprehensiveTests() {
   // Test 4: English Crop Advice (baseline)
   console.log('\n🔍 Test 4: English Crop Advice');
   try {
-    const response = await axios.post('${API_BASE}/api/v1/crop-advice', {
+    const response = await axios.post(`${API_BASE}/api/v1/crop-advice`, {
       language: 'en',
       question: 'What crop should I grow in black soil during monsoon?',
       farmerContext: {
@@ -91,7 +91,7 @@ async function runComprehensiveTests() {
   // Test 5: Hindi Translation (fallback)
   console.log('\n🔍 Test 5: Hindi Translation with Fallback');
   try {
-    const response = await axios.post('${API_BASE}/api/v1/crop-advice', {
+    const response = await axios.post(`${API_BASE}/api/v1/crop-advice`, {
       language: 'hi',
       question: 'मेरी मिट्टी काली है और बारिश कम होती है। कौन सी फसल उगाऊं?',
       farmerContext: {
@@ -123,7 +123,7 @@ async function runComprehensiveTests() {
   // Test 6: Multiple Provider System
   console.log('\n🔍 Test 6: Multiple Provider Fallback System');
   try {
-    const response = await axios.post('${API_BASE}/api/v1/crop-advice', {
+    const response = await axios.post(`${API_BASE}/api/v1/crop-advice`, {
       language: 'ta',
       question: 'வறட்சியில் என்ன பயிர் செய்யலாம்?',
       farmerContext: {
@@ -148,7 +148,7 @@ async function runComprehensiveTests() {
   // Test 7: Error Handling
   console.log('\n🔍 Test 7: Error Handling');
   try {
-    const response = await axios.post('${API_BASE}/api/v1/crop-advice', {
+    const response = await axios.post(`${API_BASE}/api/v1/crop-advice`, {
       language: 'invalid',
       question: 'test'
     }, { 
@@ -172,7 +172,7 @@ async function runComprehensiveTests() {
   console.log('\n🔍 Test 8: Performance Test');
   try {
     const startTime = Date.now();
-    const response = await axios.post('${API_BASE}/api/v1/crop-advice', {
+    const response = await axios.post(`${API_BASE}/api/v1/crop-advice`, {
       language: 'en',
       question: 'Quick test for performance',
       farmerContext: { location: 'India', season: 'kharif', soilType: 'black' }

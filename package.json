@@ -8,8 +8,8 @@
     "dev": "nodemon server.js",
     "test": "jest",
     "test:api": "powershell -ExecutionPolicy Bypass -File run-tests.ps1",
-    "test:simple": "node test-simple.js",
-    "test:hindi": "node test-hindi.js"
+    "test:simple": "node -r dotenv/config test-simple.js",
+    "test:hindi": "node -r dotenv/config test-hindi.js"
   },
   "keywords": [
     "agriculture",
