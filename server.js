@@ -70,19 +70,49 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Configuration endpoint for frontend
+app.get('/config', (req, res) => {
+  const host = req.get('host');
+  const protocol = req.get('x-forwarded-proto') || req.protocol || 'http';
+  const baseUrl = `${protocol}://${host}`;
+  
+  res.json({
+    baseUrl,
+    port: PORT,
+    environment: process.env.NODE_ENV || 'development',
+    endpoints: {
+      health: `${baseUrl}/health`,
+      cropAdvice: `${baseUrl}/api/v1/crop-advice`,
+      languages: `${baseUrl}/api/v1/crop-advice/languages`,
+      soilTypes: `${baseUrl}/api/v1/crop-advice/soil-types`,
+      seasons: `${baseUrl}/api/v1/crop-advice/seasons`,
+      stats: `${baseUrl}/api/v1/crop-advice/stats`,
+      docs: `${baseUrl}/docs.html`,
+      apiDocs: `${baseUrl}/api-docs`,
+      test: `${baseUrl}/test.html`
+    }
+  });
+});
+
 // API routes
 app.use('/api/v1/crop-advice', cropAdviceRouter);
 
 // API documentation endpoint
 app.get('/api/v1', (req, res) => {
+  const host = req.get('host');
+  const protocol = req.get('x-forwarded-proto') || req.protocol || 'http';
+  const baseUrl = `${protocol}://${host}`;
+  
   res.json({
     name: 'AgriGuru API',
     version: '1.0.0',
     description: 'AI-powered multilingual farming assistant for Indian farmers',
+    baseUrl,
     endpoints: {
       'POST /api/v1/crop-advice': 'Get personalized crop recommendations',
       'GET /health': 'Health check endpoint',
-      'GET /api/v1': 'API documentation'
+      'GET /api/v1': 'API documentation',
+      'GET /config': 'API configuration and URLs'
     },
     supportedLanguages: [
       'hi', 'bn', 'ta', 'te', 'mr', 'gu', 'kn', 'ml', 'pa', 'ur'

@@ -367,7 +367,7 @@
             <!-- API Status -->
             <div class="api-status">
                 <h3><span id="statusIndicator" class="status-indicator status-offline"></span>API Status: <span id="statusText">Checking...</span></h3>
-                <p>Base URL: <strong>http://localhost:3000</strong></p>
+                <p>Base URL: <strong><span id="baseUrl">Detecting...</span></strong></p>
             </div>
 
             <!-- Tabs -->
@@ -592,11 +592,31 @@
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:3000';
+        // Dynamically detect API base URL
+        let API_BASE = window.location.origin;
         let currentResponse = null;
 
+        // Initialize configuration
+        async function initializeConfig() {
+            try {
+                const response = await fetch(`${API_BASE}/config`);
+                if (response.ok) {
+                    const config = await response.json();
+                    API_BASE = config.baseUrl;
+                    document.getElementById('baseUrl').textContent = API_BASE;
+                    console.log('API Configuration loaded:', config);
+                    return config;
+                }
+            } catch (error) {
+                console.error('Failed to load config, using current origin:', error);
+                document.getElementById('baseUrl').textContent = API_BASE;
+            }
+            return null;
+        }
+
         // Check API status on load
-        window.onload = function() {
+        window.onload = async function() {
+            await initializeConfig();
             checkApiStatus();
         };
 

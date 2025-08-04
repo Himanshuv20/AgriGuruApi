@@ -15,12 +15,20 @@
   },
   "servers": [
     {
+      "url": "/",
+      "description": "Current server (relative URL)"
+    },
+    {
       "url": "http://localhost:3000",
-      "description": "Development server"
+      "description": "Local development server (port 3000)"
     },
     {
       "url": "http://localhost:4000",
-      "description": "Alternative development server"
+      "description": "Alternative development server (port 4000)"
+    },
+    {
+      "url": "http://localhost:5000",
+      "description": "Alternative development server (port 5000)"
     }
   ],
   "tags": [

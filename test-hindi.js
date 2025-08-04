@@ -1,7 +1,12 @@
 const axios = require('axios');
 
+// Dynamic API base URL from environment or default
+const API_BASE = process.env.API_BASE || `http://localhost:${process.env.PORT || 3000}`;
+
 async function testHindiTranslation() {
   console.log('Testing Hindi language translation with fallback...\n');
+  console.log(`API Base URL: ${API_BASE}`);
+  console.log('='.repeat(50));
   
   const testData = {
     language: 'hi',
@@ -17,7 +22,7 @@ async function testHindiTranslation() {
     console.log('Sending request to API...');
     console.log('Question in Hindi:', testData.question);
     
-    const response = await axios.post('http://localhost:3000/api/v1/crop-advice', testData, {
+    const response = await axios.post(`${API_BASE}/api/v1/crop-advice`, testData, {
       headers: {
         'Content-Type': 'application/json'
       },
